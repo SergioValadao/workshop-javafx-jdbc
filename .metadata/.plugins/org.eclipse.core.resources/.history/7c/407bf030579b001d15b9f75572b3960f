@@ -1,0 +1,19 @@
+package model.services;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import model.entities.Departamento;
+
+public class DepartamentoService {
+	
+	public List<Departamento> findAll() {
+		
+		List<Departamento> Lista = new ArrayList<>();
+		Lista.add(new Departamento(1, "Livros"));
+		Lista.add(new Departamento(2, "Computador"));
+		Lista.add(new Departamento(3, "Eletrônicos"));		
+		return Lista;
+	}
+
+}

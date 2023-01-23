@@ -1,0 +1,4 @@
+user=root
+password="sv@160329"
+dburl='jdbc:Mysql://127.0.0.1:3306/coursejdbc'
+useSSL=false

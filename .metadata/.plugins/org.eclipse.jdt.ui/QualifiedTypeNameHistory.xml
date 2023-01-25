@@ -10,8 +10,6 @@
     <fullyQualifiedTypeName name="javafx.scene.control.TableColumn"/>
     <fullyQualifiedTypeName name="javafx.fxml.FXML"/>
     <fullyQualifiedTypeName name="javafx.scene.control.cell.PropertyValueFactory"/>
-    <fullyQualifiedTypeName name="application.Main"/>
-    <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="javafx.collections.ObservableList"/>
     <fullyQualifiedTypeName name="java.lang.IllegalStateException"/>
     <fullyQualifiedTypeName name="javafx.collections.FXCollections"/>
@@ -19,7 +17,6 @@
     <fullyQualifiedTypeName name="java.lang.invoke.LambdaMetafactory"/>
     <fullyQualifiedTypeName name="java.lang.invoke.LambdaConversionException"/>
     <fullyQualifiedTypeName name="java.util.function.Consumer"/>
-    <fullyQualifiedTypeName name="gui.DepartamentoListaControler"/>
     <fullyQualifiedTypeName name="com.mysql.cj.xdevapi.Statement"/>
     <fullyQualifiedTypeName name="com.mysql.cj.xdevapi.Statement.LockContention"/>
     <fullyQualifiedTypeName name="model.dao.DaoFactory"/>
@@ -29,15 +26,25 @@
     <fullyQualifiedTypeName name="javafx.scene.control.Button"/>
     <fullyQualifiedTypeName name="javafx.stage.Window"/>
     <fullyQualifiedTypeName name="gui.MainViewControler"/>
-    <fullyQualifiedTypeName name="javafx.event.Event"/>
     <fullyQualifiedTypeName name="java.awt.Label"/>
     <fullyQualifiedTypeName name="javafx.scene.control.Label"/>
-    <fullyQualifiedTypeName name="gui.util.Alerts"/>
-    <fullyQualifiedTypeName name="javafx.scene.control.Alert"/>
-    <fullyQualifiedTypeName name="javafx.scene.control.Alert.AlertType"/>
     <fullyQualifiedTypeName name="javafx.fxml.FXMLLoader"/>
     <fullyQualifiedTypeName name="javafx.scene.layout.Pane"/>
     <fullyQualifiedTypeName name="java.awt.event.ActionEvent"/>
+    <fullyQualifiedTypeName name="model.dao.DepartamentoDao"/>
+    <fullyQualifiedTypeName name="gui.util.Constraints"/>
+    <fullyQualifiedTypeName name="gui.util.Alerts"/>
+    <fullyQualifiedTypeName name="javafx.scene.control.Alert"/>
+    <fullyQualifiedTypeName name="javafx.scene.control.Alert.AlertType"/>
+    <fullyQualifiedTypeName name="application.Main"/>
+    <fullyQualifiedTypeName name="javax.swing.Action"/>
+    <fullyQualifiedTypeName name="javafx.event.Event"/>
+    <fullyQualifiedTypeName name="javax.print.attribute.standard.DialogTypeSelection"/>
     <fullyQualifiedTypeName name="gui.util.utils"/>
     <fullyQualifiedTypeName name="javafx.event.ActionEvent"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="gui.listeners.DataChangeListener"/>
+    <fullyQualifiedTypeName name="java.lang.RuntimeException"/>
+    <fullyQualifiedTypeName name="java.util.HashMap"/>
+    <fullyQualifiedTypeName name="gui.DepartamentoListaControler"/>
 </qualifiedTypeNameHistroy>

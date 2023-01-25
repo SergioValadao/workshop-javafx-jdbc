@@ -1,0 +1,75 @@
+package gui;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.function.Consumer;
+
+import application.Main;
+import gui.util.Alerts;
+import javafx.event.Event;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.VBox;
+import model.services.DepartamentoService;
+
+public class MainViewControler implements Initializable {
+	
+	@FXML
+	private MenuItem MenuItemVendedor;
+	@FXML
+	private MenuItem MenuItemDepartamento;
+	@FXML
+	private MenuItem MenuItemSobre;
+	
+	@FXML
+	public void onItemVendedorAction() {
+		System.out.println("Menu Vendedor");
+	}
+	
+	@FXML
+	public void onItemDepartamentoAction() {
+		onLoadShowView("/gui/DepartamentoLista.fxml", (DepartamentoListaControler controller) -> {
+			controller.setDepartamentoService(new DepartamentoService());
+			controller.updateTableView();
+		});
+	}
+		
+	public void onItemSobreAction() {
+		onLoadShowView("/gui/SobreView.fxml", x -> {});
+	}
+
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		// TODO Auto-generated method stub
+	}
+	
+	public synchronized <T> void onLoadShowView(String nome, Consumer<T> funcao) {		
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(nome));
+			VBox newVbox = loader.load();		
+			
+			Scene mainScene = Main.getMainScene();
+			VBox mainVbox = (VBox)((ScrollPane) mainScene.getRoot()).getContent(); 
+			Node menu = mainVbox.getChildren().get(0);
+			mainVbox.getChildren().clear();
+			
+			mainVbox.getChildren().add(menu);
+			mainVbox.getChildren().addAll(newVbox.getChildren());
+			
+			T controller = loader.getController();
+			funcao.accept(controller);
+							
+			
+		} catch (IOException e) {
+			Alerts.showAlert("Erro", "Erro desconhecido", e.getMessage(), Alert.AlertType.ERROR);
+		}
+				
+	}	
+}

@@ -6,7 +6,6 @@
     <fullyQualifiedTypeName name="javafx.scene.layout.VBox"/>
     <fullyQualifiedTypeName name="javafx.scene.control.MenuItem"/>
     <fullyQualifiedTypeName name="java.io.Serializable"/>
-    <fullyQualifiedTypeName name="javafx.scene.control.TableView"/>
     <fullyQualifiedTypeName name="javafx.scene.control.TableColumn"/>
     <fullyQualifiedTypeName name="javafx.fxml.FXML"/>
     <fullyQualifiedTypeName name="javafx.scene.control.cell.PropertyValueFactory"/>
@@ -46,5 +45,10 @@
     <fullyQualifiedTypeName name="gui.listeners.DataChangeListener"/>
     <fullyQualifiedTypeName name="java.lang.RuntimeException"/>
     <fullyQualifiedTypeName name="java.util.HashMap"/>
+    <fullyQualifiedTypeName name="java.awt.ItemSelectable"/>
+    <fullyQualifiedTypeName name="com.mysql.cj.result.Row"/>
+    <fullyQualifiedTypeName name="javafx.scene.control.TableRow"/>
     <fullyQualifiedTypeName name="gui.DepartamentoListaControler"/>
+    <fullyQualifiedTypeName name="javafx.scene.control.TableView"/>
+    <fullyQualifiedTypeName name="java.lang.Override"/>
 </qualifiedTypeNameHistroy>

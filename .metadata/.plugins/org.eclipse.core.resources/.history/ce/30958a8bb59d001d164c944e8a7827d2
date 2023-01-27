@@ -1,0 +1,35 @@
+package model.services;
+
+import java.util.List;
+
+import gui.util.Alerts;
+import javafx.scene.control.Alert;
+import model.dao.DaoFactory;
+import model.dao.DepartamentoDao;
+import model.entities.Departamento;
+
+public class VendedorService {
+	
+	private DepartamentoDao dao = DaoFactory.createDepartamentoDao();
+	
+	public List<Departamento> findAll() {		
+		return dao.findAll();
+	}
+	
+	public void saveOrUpdate(Departamento dep) {
+		if(dep.getId() == null) {
+			dao.insert(dep);
+		}else {
+			dao.update(dep);
+		}					
+	}
+	
+	public void Excluir(Departamento dep) {
+		if(dep.getId() == null) {
+			Alerts.showAlert("Exclusão de registro", null, "Não foi possivel excluir registro. Verifique", Alert.AlertType.ERROR);
+		}else {
+			dao.deleteById(dep.getId());
+		}					
+	}
+
+}

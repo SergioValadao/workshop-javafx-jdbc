@@ -1,0 +1,202 @@
+package gui;
+
+import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+
+import db.DbException;
+import gui.listeners.DataChangeListener;
+import gui.util.Alerts;
+import gui.util.Constraints;
+import gui.util.utils;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.util.Callback;
+import model.entities.Departamento;
+import model.entities.Vendedor;
+import model.exception.ValidateException;
+import model.services.DepartamentoService;
+import model.services.VendedorService;
+
+public class VendedorFormControler implements Initializable {
+
+	private Vendedor dep;
+	private VendedorService service;
+	private DepartamentoService depService;
+	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
+
+	@FXML
+	private TextField txtId;
+	@FXML
+	private TextField txtNome;
+	@FXML
+	private TextField txtEmail;
+	@FXML
+	private DatePicker dpBirthDate;
+	@FXML
+	private TextField txtBaseSalary;
+	@FXML
+	private ComboBox<Departamento> comboBoxDepartamento;
+	@FXML
+	private Button btSalvar;
+	@FXML
+	private Button btCancelar;
+	@FXML
+	private Label lblErrorName;
+	@FXML
+	private Label lblErrorEmail;	
+	@FXML
+	private Label lblErrorBaseSalary;
+
+	private ObservableList<Departamento> obsList;
+
+	public void setVendedor(Vendedor dp) {
+		this.dep = dp;
+	}
+
+	public void setServices(VendedorService service, DepartamentoService depservice) {
+		this.service = service;
+		this.depService = depservice;
+	}
+
+	public void subscribeDataChangeListener(DataChangeListener listener) {
+		dataChangeListeners.add(listener);
+	}
+
+	public void onbtSalvarAction(ActionEvent event) {
+		try {
+			service.saveOrUpdate(getFormData());
+			notifyDataChangeListeners();
+			utils.currentStage(event).close(); // Fecha a janela de entrada de dados
+		} catch (ValidateException e) {
+			setErrorMensagem(e.getErros());
+		} catch (DbException e) {
+			Alerts.showAlert("Erro ao salvar Vendedor", null, e.getMessage(), Alert.AlertType.ERROR);
+		}
+	}
+
+	private void notifyDataChangeListeners() {
+		for (DataChangeListener listener : dataChangeListeners) {
+			listener.onDataChanged();
+		}
+	}
+
+	public void onbtCancelarAction(ActionEvent event) {
+		utils.currentStage(event).close(); // Fecha a janela de entrada de dados
+	}
+
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		Constraints.setTextFieldMaxLength(txtNome, 30);
+		Constraints.setTextFieldDouble(txtBaseSalary);
+		Constraints.setTextFieldMaxLength(txtEmail, 80);
+		utils.formatDatePicker(dpBirthDate, "dd/MM/YYYY");
+		initializeComboBoxDepartamento();
+	}
+
+	private Vendedor getFormData() {
+		
+		Departamento obj = new Departamento();
+				
+		ValidateException exception = new ValidateException("Erro de Validação");
+		
+		dep.setId(utils.tryParseInteger(txtId.getText()));
+		obj.setId(utils.tryParseInteger(txtId.getText()));
+		obj.setNome(comboBoxDepartamento.valueProperty().get());
+		System.out.println(obj.getNome());
+
+		if (txtNome.getText() == null || txtNome.getText().trim().equals("")) {
+			exception.addError("nome", "Favor digitar nome do vendedor");
+		}
+		dep.setNome(txtNome.getText());
+		
+		if(txtEmail.getText() == null || txtEmail.getText().trim().equals("")) {
+			exception.addError("email", "Favor digitar Email do vendedor");
+		}
+		dep.setEmail(txtEmail.getText());
+		
+		if(txtBaseSalary.getText() == null || txtBaseSalary.getText().trim().equals("")) {
+			exception.addError("baseSalary", "Favor digitar salario base do vendedor");
+		}
+		dep.setBaseSalary(utils.tryParseDouble(txtBaseSalary.getText()));
+			
+		Instant instant = Instant.from(dpBirthDate.getValue().atStartOfDay(ZoneId.systemDefault()));
+		dep.setBirthDate(Date.from(instant));
+		
+		if (exception.getErros().size() > 0) {
+			throw exception;
+		}						
+		return dep;
+	}
+
+	public void updateFormData() {
+
+		if (dep.getId() != null) {
+			txtId.setText(String.valueOf(dep.getId()));
+		}
+		txtNome.setText(dep.getNome());
+		txtEmail.setText(dep.getEmail());
+		txtBaseSalary.setText(String.format("%.2f", dep.getBaseSalary()));
+		if (dep.getBirthDate() != null) {
+			Locale.setDefault(Locale.US);
+			dpBirthDate.setValue(LocalDate.ofInstant(dep.getBirthDate().toInstant(), ZoneId.systemDefault()));
+		}
+		if(dep.getDepartamento()== null) {
+			comboBoxDepartamento.getSelectionModel().selectFirst();
+		}else {
+			comboBoxDepartamento.setValue(dep.getDepartamento());
+		}
+	}
+
+	public void loadAssociatedObjetos() {
+		List<Departamento> list = depService.findAll();
+		obsList = FXCollections.observableArrayList(list);
+		comboBoxDepartamento.setItems(obsList);
+	}
+
+	private void setErrorMensagem(Map<String, String> errors) {
+		Set<String> fields = errors.keySet();
+		
+		if (fields.contains("nome")) {
+			lblErrorName.setText(errors.get("nome"));
+		}
+		if (fields.contains("email")) {
+			lblErrorEmail.setText(errors.get("email"));
+		}
+		if (fields.contains("baseSalary")) {
+			lblErrorBaseSalary.setText(errors.get("baseSalary"));
+		}
+	}
+
+	private void initializeComboBoxDepartamento() {
+		Callback<ListView<Departamento>, ListCell<Departamento>> factory = lv -> new ListCell<Departamento>() {
+			@Override
+			protected void updateItem(Departamento item, boolean empty) {
+				super.updateItem(item, empty);
+				setText(empty ? "" : item.getNome());
+			}
+		};
+		comboBoxDepartamento.setCellFactory(factory);
+		comboBoxDepartamento.setButtonCell(factory.call(null));
+	}
+
+}

@@ -1,0 +1,202 @@
+package gui;
+
+import java.net.URL;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
+
+import application.Main;
+import gui.listeners.DataChangeListener;
+import gui.util.Alerts;
+import gui.util.utils;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+import model.entities.Vendedor;
+import model.services.VendedorService;
+
+public class VendedorListaControler implements Initializable, DataChangeListener {
+
+	private VendedorService service;
+	private ObservableList<Vendedor> obslista;
+	private Vendedor dep;
+
+	public void setVendedorService(VendedorService service) {
+		this.service = service;
+	}
+
+	@FXML
+	private TableView<Vendedor> TableViewVendedor;
+
+	@FXML
+	private TableColumn<Vendedor, Integer> colId;
+
+	@FXML
+	private TableColumn<Vendedor, String> colVendedor;
+	
+	@FXML
+	private TableColumn<Vendedor, String> colEmail;
+
+	@FXML
+	private TableColumn<Vendedor, Date> colBirthDate;
+
+	@FXML
+	private TableColumn<Vendedor, Double> colBaseSalary;
+
+	@FXML
+	private TableColumn<Vendedor, Vendedor> tableColEdit;
+
+	@FXML
+	private TableColumn<Vendedor, Vendedor> tableColExcluir;
+
+	@FXML
+	private Button BtNovo;
+
+	@FXML
+	private void onBtNovoAction(ActionEvent event) {
+		dep = new Vendedor();
+		Stage parentStage = utils.currentStage(event);
+		//CreateDialogForm("/gui/VendedorForm.fxml", parentStage, dep);
+	}
+
+	@FXML
+	private void onTableViewVendedorAction() {
+		dep = new Vendedor();
+		dep.setId(TableViewVendedor.getSelectionModel().getSelectedItem().getId());
+		dep.setNome(TableViewVendedor.getSelectionModel().getSelectedItem().getNome());
+
+		/*
+		 * Simular o duplo click TableViewVendedor.setRowFactory(x -> {
+		 * TableRow<Vendedor> row = new TableRow<>(); row.setOnMouseClicked(event ->
+		 * { if (event.getClickCount() == 2 && (!row.isEmpty())) { dep = row.getItem();
+		 * System.out.println(dep); } }); return row; });
+		 */
+
+	}
+
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		InitializeNodes();
+
+	}
+
+	private void InitializeNodes() {
+		colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+		colVendedor.setCellValueFactory(new PropertyValueFactory<>("nome"));
+		colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+		colBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+		utils.formatTableColumnDate(colBirthDate, "dd/MM/yyyy");
+		colBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
+		// Instrutor
+		Stage stage = (Stage) Main.getMainScene().getWindow();
+		TableViewVendedor.prefHeightProperty().bind(stage.heightProperty());
+
+		// TableViewVendedor.prefHeightProperty().setValue(stage.getHeight()); //EU
+		// TableViewVendedor.setPrefHeight(Main.getMainScene().getHeight()); // Eu
+	}
+
+	public void updateTableView() {
+		if (service == null) {
+			throw new IllegalStateException("Service não encontrado");
+		}
+		List<Vendedor> list = service.findAll();
+		obslista = FXCollections.observableArrayList(list);
+		TableViewVendedor.setItems(obslista);
+		initEditButtons();
+		initRemoveButtons();
+	}
+
+	/*
+	private void CreateDialogForm(String fxmlnome, Stage oldStage, Vendedor dep) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlnome));
+			Pane pane = loader.load();
+
+			VendedorFormControler controler = loader.getController();
+			controler.setVendedor(dep);
+			controler.setVendedorService(new VendedorService());
+			controler.subscribeDataChangeListener(this);
+			controler.updateFormData();
+
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Cadastrar novo Vendedor");
+			dialogStage.setScene(new Scene(pane));
+			dialogStage.setResizable(false);
+			dialogStage.initOwner(oldStage);
+			dialogStage.showAndWait();
+
+		} catch (Exception e) {
+			Alerts.showAlert("Erro de IO", "Erro de leitura", e.getMessage(), Alert.AlertType.ERROR);
+		}
+	}
+*/
+	@Override
+	public void onDataChanged() {
+		updateTableView();
+	}
+
+	public void initEditButtons() {
+		tableColEdit.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColEdit.setCellFactory(param -> new TableCell<Vendedor, Vendedor>() {
+			private final Button button = new Button("Editar");
+
+			@Override
+			protected void updateItem(Vendedor dp, boolean empty) {
+				super.updateItem(dp, empty);
+				if (dp == null) {
+					setGraphic(null);
+					return;
+				}
+				setGraphic(button);
+//				button.setOnAction(
+//						event -> CreateDialogForm("/gui/VendedorForm.fxml", utils.currentStage(event), dp));
+			}
+		});
+	}
+
+	private void initRemoveButtons() {
+		tableColExcluir.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColExcluir.setCellFactory(param -> new TableCell<Vendedor, Vendedor>() {
+			private final Button button = new Button("Excluir");
+
+			@Override
+			protected void updateItem(Vendedor obj, boolean empty) {
+				super.updateItem(obj, empty);
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				setGraphic(button);
+				button.setOnAction(event -> removeEntity(obj));
+			}
+		});
+	}
+
+	protected void removeEntity(Vendedor obj) {
+		Optional<ButtonType> result = Alerts.showConfirmation("Excluir registro", "Confirma exclusão do registro '" + obj.getNome() + "'?");
+
+		if (result.get() == ButtonType.OK) {
+			if (service == null) {
+				throw new IllegalStateException("Serviço não inicializado");
+			}
+			try {
+				service.Excluir(obj);
+				updateTableView();
+			} catch (Exception e) {
+				Alerts.showAlert("Erro", null, "Erro removendo registro", Alert.AlertType.ERROR);
+			}
+		}
+	}
+}
